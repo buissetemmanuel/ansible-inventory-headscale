@@ -1,0 +1,16 @@
+---
+
+roles:
+  - src: https://github.com/buissetemmanuel/ansible-role-package.git
+    version: v1.0.0
+    name: package
+  - src: https://github.com/buissetemmanuel/ansible-role-user.git
+    version: v1.1.1
+    name: user
+  - src: https://github.com/buissetemmanuel/ansible-role-container.git
+    version: v2.3.1
+    name: container
+
+collections:
+  - ansible.netcommon
+  - containers.podman

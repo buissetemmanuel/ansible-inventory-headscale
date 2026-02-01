@@ -1,0 +1,8 @@
+---
+
+- name: Manage Package
+  hosts: package
+  tasks:
+    - name: Include buissetemmanuel.package
+      ansible.builtin.include_role:
+        name: package

@@ -1,0 +1,15 @@
+---
+
+- name: "{{ target_hosts }}"
+  hosts: "{{ target_hosts }}"
+  vars:
+    playbook_roles: ['user', 'container']
+    reverse_order: "{{ true if container_state is defined and container_state=='absent' else false }}"
+    user_state: "{{ container_state if container_state is defined else 'present' }}"
+  tasks:
+    - name: "{{ 'Install user and container' if container_state=='present' else 'Uninstall container and user' }}"
+      ansible.builtin.include_role:
+        name: "{{ role }}"
+      loop: "{{ playbook_roles|reverse if reverse_order else playbook_roles }}"
+      loop_control:
+        loop_var: role

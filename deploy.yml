@@ -1,0 +1,5 @@
+---
+
+- import_playbook: container_template.yml
+  vars:
+    target_hosts: headscale

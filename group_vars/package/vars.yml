@@ -1,0 +1,11 @@
+---
+
+package_packages:
+  - {package: python3-libdnf5}
+  - {package: python3-psycopg2}
+  - {package: slirp4netns}
+  - {package: systemd-container}
+  - {package: acl}
+  - {package: iptables-nft}
+  - {package: podman}
+  - {package: postfix}

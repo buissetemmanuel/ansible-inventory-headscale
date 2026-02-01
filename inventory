@@ -1,0 +1,13 @@
+rpi51  ansible_host=rpi51.local
+
+[all:vars]
+ansible_user="admin"
+
+[package]
+rpi51
+
+[ping]
+rpi51
+
+[headscale]
+rpi51

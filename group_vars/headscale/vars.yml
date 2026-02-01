@@ -1,0 +1,97 @@
+---
+
+user_groups:
+  - name: headscaleug
+  - name: headscaleugs
+  - name: headscaleugl
+  - name: headscaleugal
+user_users:
+  - name: headscaleuo
+    group: headscaleug
+    create_home: true
+  - name: headscaleuos
+    group: headscaleugs
+    create_home: true
+    groups: headscaleugl
+    systemd: true
+  - name: headscaleual
+    group: headscaleugal
+    groups: headscaleugl
+
+container_user_owner: headscaleuo
+container_user_group: headscaleug
+container_user_group_logs: headscaleugl
+container_user_owner_service: headscaleuos
+container_user_group_service: headscaleugs
+
+container_pod_name: headscale_pod
+
+container_pod_containers:
+  - name: headscale
+    image_name: docker.io/headscale/headscale
+    image_tag: v0.27.1
+    image_pull_policy: IfNotPresent
+    description: "HEADSCALE - based on Tailscale"
+    args:
+      - serve
+    ports:
+      - containerPort: '8080'
+        hostPort: '8080'
+        protocol: TCP
+      - containerPort: '9090'
+        hostPort: '9090'
+        protocol: TCP
+    resources:
+      limits:
+        cpu: "1"
+      requests:
+        cpu: "0.5"
+    volumeMounts:
+      - mountPath: /etc/headscale:rw,z
+        name: headscale-etc-dir
+      - mountPath: /var/lib/headscale:rw,z
+        name: headscale-var-lib-dir
+      - mountPath: /var/run/headscale:rw,z
+        name: headscale-var-run-dir
+
+headscale_pod_etc_dir: "{{ container_pod_home_dir }}/etc"
+headscale_pod_var_lib_dir: "{{ container_pod_home_dir }}/var/lib"
+headscale_pod_var_run_dir: "{{ container_pod_home_dir }}/var/run"
+
+container_directories:
+  - path: "{{ headscale_pod_etc_dir }}"
+    owner: "{{ container_user_owner }}"
+    group: "{{ container_user_group_service }}"
+    seuser: system_u
+    setype: container_file_t
+  - path: "{{ headscale_pod_var_lib_dir }}"
+    owner: "{{ container_user_owner }}"
+    group: "{{ container_user_group_service }}"
+    seuser: system_u
+    setype: container_file_t
+    unshare: true
+  - path: "{{ headscale_pod_var_run_dir }}"
+    owner: "{{ container_user_owner }}"
+    group: "{{ container_user_group_service }}"
+    seuser: system_u
+    setype: container_file_t
+    unshare: true
+
+container_files:
+  - src: config.yml
+    dest: "{{ headscale_pod_etc_dir }}/config.yml"
+    group: "{{ container_user_group_service }}"
+    seuser: system_u
+    setype: container_file_t
+
+
+container_pod_volumes:
+  - name: headscale-etc-dir
+    hostPath:
+      path: "{{ headscale_pod_etc_dir }}"
+  - name: headscale-var-lib-dir
+    hostPath:
+      path: "{{ headscale_pod_var_lib_dir }}"
+  - name: headscale-var-run-dir
+    hostPath:
+      path: "{{ headscale_pod_var_run_dir }}"
